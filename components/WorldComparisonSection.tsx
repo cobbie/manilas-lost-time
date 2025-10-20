@@ -1,78 +1,46 @@
 import React from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, LabelList } from 'recharts';
-import type { CityTrafficData } from '../types';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import { CityTrafficData } from '../types';
 
-const data: CityTrafficData[] = [
-    { city: 'Manila', country: 'Philippines', minutes: 25.5, timeString: '25m 30s' },
-    { city: 'Dublin', country: 'Ireland', minutes: 25.5, timeString: '25m 30s' },
-    { city: 'Toronto', country: 'Canada', minutes: 25, timeString: '25m 00s' },
-    { city: 'London', country: 'UK', minutes: 24.83, timeString: '24m 50s' },
-    { city: 'Lima', country: 'Peru', minutes: 24.33, timeString: '24m 20s' },
+const worldData: CityTrafficData[] = [
+  { city: 'Manila', minutes: 29.8 },
+  { city: 'Dublin', minutes: 29.5 },
+  { city: 'Toronto', minutes: 29.0 },
+  { city: 'London', minutes: 28.5 },
+  { city: 'Lima', minutes: 28.3 },
 ];
-
-const CustomTooltip = ({ active, payload, label }: any) => {
-    if (active && payload && payload.length) {
-      const dataPoint = payload[0].payload as CityTrafficData;
-      return (
-        <div className="bg-gray-800 p-3 rounded-lg border border-gray-600">
-          <p className="text-white font-bold">{`${dataPoint.city}, ${dataPoint.country}`}</p>
-          <p className="text-yellow-400">{`Avg. time for 10km: ${dataPoint.timeString}`}</p>
-        </div>
-      );
-    }
-    return null;
-};
-
-const CustomYAxisTick = ({ y, payload }: any) => {
-    return (
-        <g transform={`translate(0,${y})`}>
-            <text x={0} y={0} dy={-4} textAnchor="start" fill="#A0AEC0" fontSize={14} fontWeight="bold">
-                {payload.value}
-            </text>
-        </g>
-    );
-};
 
 export const WorldComparisonSection: React.FC = () => {
   return (
-    <section className="py-16 md:py-24">
-      <div className="text-center mb-12 max-w-3xl mx-auto">
-        <h2 className="text-3xl md:text-4xl font-bold font-poppins mb-4">The World's Slowest Cities</h2>
-        <p className="text-gray-400 text-lg">
-          In 2023, Metro Manila was ranked as having the slowest travel time in the world. Here's how it compares to other congested metro areas for a 10km trip.
-        </p>
+    <section className="py-16 sm:py-20">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center max-w-3xl mx-auto">
+          <h2 className="text-4xl font-extrabold text-white sm:text-5xl font-inter tracking-tighter">
+            The World's Slowest Cities
+          </h2>
+          <p className="mt-4 text-lg text-gray-300">
+            In 2023, Metro Manila was ranked as having the worst traffic congestion in the world. Here's how the average time to travel 10km compares to other gridlocked cities.
+          </p>
+        </div>
+        <div className="mt-12 max-w-4xl mx-auto" style={{ height: '400px' }}>
+            <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={worldData} layout="vertical" margin={{ top: 5, right: 20, left: 80, bottom: 5 }}>
+                    <XAxis type="number" stroke="#9CA3AF" domain={[0, 32]} tickFormatter={(tick) => `${tick} min`} />
+                    <YAxis dataKey="city" type="category" stroke="#9CA3AF" width={80} tick={{ fill: '#D1D5DB' }} />
+                    <Tooltip 
+                        cursor={{fill: 'rgba(255, 255, 255, 0.1)'}}
+                        contentStyle={{ backgroundColor: '#1F2937', border: '1px solid #4B5563' }}
+                        labelStyle={{ color: '#F9FAFB' }}
+                    />
+                    <Bar dataKey="minutes" barSize={35} radius={[0, 8, 8, 0]}>
+                         {worldData.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.city === 'Manila' ? '#DC2626' : '#4B5563'} />
+                        ))}
+                    </Bar>
+                </BarChart>
+            </ResponsiveContainer>
+        </div>
       </div>
-      <div style={{ width: '100%', height: 350 }}>
-        <ResponsiveContainer>
-          <BarChart
-            data={data}
-            layout="vertical"
-            margin={{ top: 5, right: 30, left: 20, bottom: 20 }}
-            barCategoryGap="20%"
-          >
-            <CartesianGrid strokeDasharray="3 3" stroke="#4A5568" horizontal={false} />
-            <XAxis type="number" domain={[0, 30]} tick={{ fill: '#A0AEC0' }} label={{ value: 'Average minutes to travel 10km', position: 'insideBottom', fill: '#A0AEC0', dy: 20 }} />
-            <YAxis 
-                type="category" 
-                dataKey="city" 
-                tick={<CustomYAxisTick />}
-                width={80}
-                axisLine={false}
-                tickLine={false}
-            />
-            <Tooltip content={<CustomTooltip />} cursor={{fill: 'rgba(236, 204, 104, 0.1)'}} />
-            <Bar dataKey="minutes">
-                {data.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.city === 'Manila' ? '#FBBF24' : '#718096'} />
-                ))}
-                <LabelList dataKey="timeString" position="right" style={{ fill: 'white', fontWeight: 'bold' }} />
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
-      <p className="text-center text-xs text-gray-500 mt-4">
-        Source: TomTom Traffic Index 2023 (Metro Area Rankings)
-      </p>
     </section>
   );
 };

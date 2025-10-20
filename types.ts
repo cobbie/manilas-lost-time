@@ -1,12 +1,10 @@
 export interface TravelConditionData {
   condition: string;
   minutes: number;
-  timeString: string;
+  color: string;
 }
 
 export interface CityTrafficData {
   city: string;
-  country: string;
-  minutes: number;
-  timeString: string;
+  minutes: number; // Avg time to travel 10km
 }
